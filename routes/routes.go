@@ -8,31 +8,28 @@ import (
 	"net/http"
 )
 
-func readJSONFile(filePath string) (content []byte) {
+// Read Json file and parsed it
+func ParseJSONFile(filePath string, parsedTo interface{}) (ParsedData interface{}) {
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)
 	}
-	return content
+	err2 := json.Unmarshal(content, &parsedTo)
+	if err2 != nil {
+		fmt.Println(err2.Error())
+	}
+	return parsedTo
 }
 
 //List transactions in payment providers
 func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
-	flyPayAContent := readJSONFile("data/flyPayA.json")
-	flyPayBContent := readJSONFile("data/flyPayB.json")
+	var paymentATransactions models.PaymentProviderA
+	respA := ParseJSONFile("data/flyPayA.json", paymentATransactions)
 
-	var FlyPayAResonse models.PaymentProviderA
-	err2 := json.Unmarshal(flyPayAContent, &FlyPayAResonse)
-	if err2 != nil {
-		fmt.Println(err2.Error())
-	}
+	var paymentBTransactions models.PaymentProviderB
+	respB := ParseJSONFile("data/flyPayB.json", paymentBTransactions)
 
-	var FlyPayBResonse models.PaymentProviderB
-	err3 := json.Unmarshal(flyPayBContent, &FlyPayBResonse)
-	if err3 != nil {
-		fmt.Println(err2.Error())
-	}
-	response := []interface{}{FlyPayAResonse, FlyPayBResonse}
+	response := []interface{}{respA, respB}
 
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(response)
