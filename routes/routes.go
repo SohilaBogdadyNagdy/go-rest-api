@@ -25,6 +25,7 @@ func ParseJSONFile(filePath string, parsedTo interface{}) (ParsedData interface{
 
 //List transactions in payment providers
 func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
+	var response interface{}
 	query := request.URL.Query()
 	byProviderFilter := query.Get("provider")
 	//byStatusCodeFilter := query.Get("statusCode")
@@ -38,20 +39,17 @@ func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
 			json.NewEncoder(writer).Encode(err)
 			return
 		}
-		resp := ParseJSONFile("data/"+byProviderFilter+".json", providerExist)
-		writer.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(writer).Encode(resp)
-		return
+		response = ParseJSONFile("data/"+byProviderFilter+".json", providerExist)
 
+	} else {
+		var allTrasn []interface{}
+		for providerName, providerStruct := range models.SuportedPaymentProviders() {
+			paymentTrans := ParseJSONFile("data/"+providerName+".json", providerStruct)
+			allTrasn = append(allTrasn, paymentTrans)
+
+		}
+		response = allTrasn
 	}
-
-	var paymentATransactions models.PaymentProviderA
-	respA := ParseJSONFile("data/flyPayA.json", paymentATransactions)
-
-	var paymentBTransactions models.PaymentProviderB
-	respB := ParseJSONFile("data/flyPayB.json", paymentBTransactions)
-
-	response := []interface{}{respA, respB}
 
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(response)
