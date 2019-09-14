@@ -22,3 +22,12 @@ type FlyPayB struct {
 	OrderInfo           string `json:"orderInfo"`
 	PaymentID           string `json:"paymentId"`
 }
+
+// return obj provide all current supported payment provider
+func SuportedPaymentProviders() map[string]interface{} {
+	supportedPaymentProviders := make(map[string]interface{})
+	supportedPaymentProviders["flyPayA"] = PaymentProviderA{Transactions: []FlyPayA{}}
+	supportedPaymentProviders["flyPayB"] = PaymentProviderB{Transactions: []FlyPayB{}}
+
+	return supportedPaymentProviders
+}

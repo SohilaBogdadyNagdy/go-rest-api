@@ -3,8 +3,10 @@ package routes
 import (
 	"api/models"
 	"encoding/json"
-	"fmt"
+
+	// "fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -12,17 +14,37 @@ import (
 func ParseJSONFile(filePath string, parsedTo interface{}) (ParsedData interface{}) {
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 	err2 := json.Unmarshal(content, &parsedTo)
 	if err2 != nil {
-		fmt.Println(err2.Error())
+		log.Fatal(err2.Error())
 	}
 	return parsedTo
 }
 
 //List transactions in payment providers
 func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	byProviderFilter := query.Get("provider")
+	//byStatusCodeFilter := query.Get("statusCode")
+
+	if byProviderFilter != "" {
+		providerExist := models.SuportedPaymentProviders()[byProviderFilter]
+		if providerExist == nil {
+			err := map[string]interface{}{"code": "Invalid Provider"}
+			writer.Header().Set("Content-type", "applciation/json")
+			writer.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(writer).Encode(err)
+			return
+		}
+		resp := ParseJSONFile("data/"+byProviderFilter+".json", providerExist)
+		writer.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(writer).Encode(resp)
+		return
+
+	}
+
 	var paymentATransactions models.PaymentProviderA
 	respA := ParseJSONFile("data/flyPayA.json", paymentATransactions)
 
