@@ -1,7 +1,7 @@
 package listTransactions
 
 import (
-	"mux"
+	"api/routes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,8 +9,7 @@ import (
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	rr := httptest.NewRecorder()
-	router := mux.Router{}
-	router.ServeHTTP(rr, req)
+	routes.HandleRoutes().ServeHTTP(rr, req)
 
 	return rr
 }

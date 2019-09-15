@@ -5,8 +5,15 @@ import (
 	"api/models"
 	"encoding/json"
 	"fmt"
+	"mux"
 	"net/http"
 )
+
+func HandleRoutes() (r *mux.Router) {
+	router := mux.NewRouter()
+	router.HandleFunc("/api/payment/transaction", ListAllTransactions)
+	return router
+}
 
 //List transactions in payment providers
 func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {

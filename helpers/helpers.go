@@ -1,15 +1,14 @@
 package helpers
 
 import (
-	"log"
 	"encoding/json"
 	"io/ioutil"
-
+	"log"
 )
 
 // Read Json file and parsed it
-func ParseJSONFile(filePath string, parsedTo interface{}) (ParsedData interface{}) {
-	content, err := ioutil.ReadFile(filePath)
+func ParseJSONFile(fileName string, parsedTo interface{}) (ParsedData interface{}) {
+	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
