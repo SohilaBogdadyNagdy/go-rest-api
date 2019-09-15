@@ -4,18 +4,16 @@ import (
 	"api/helpers"
 	"api/models"
 	"encoding/json"
-
-	// "fmt"
-
+	"fmt"
 	"net/http"
 )
 
 //List transactions in payment providers
 func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
-	var response interface{}
+	var transactions interface{}
 	query := request.URL.Query()
 	byProviderFilter := query.Get("provider")
-	//byStatusCodeFilter := query.Get("statusCode")
+	byStatusCodeFilter := query.Get("statusCode")
 
 	if byProviderFilter != "" {
 		providerExist := models.SuportedPaymentProviders()[byProviderFilter]
@@ -26,7 +24,7 @@ func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
 			json.NewEncoder(writer).Encode(err)
 			return
 		}
-		response = helpers.ParseJSONFile("data/"+byProviderFilter+".json", providerExist)
+		transactions = helpers.ParseJSONFile("data/"+byProviderFilter+".json", providerExist)
 
 	} else {
 		var allTrasn []interface{}
@@ -35,9 +33,15 @@ func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
 			allTrasn = append(allTrasn, paymentTrans)
 
 		}
-		response = allTrasn
+		transactions = allTrasn
+	}
+
+	if byStatusCodeFilter != "" {
+		config := helpers.ParseJSONFile("configs/config.json", models.StatusCodes)
+		fmt.Println(config)
+
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(response)
+	json.NewEncoder(writer).Encode(transactions)
 }

@@ -1,0 +1,19 @@
+{
+    "StatusCodes": 
+    [
+        {
+            "STATUS": "authorised",
+            "CODES": [1, 100]
+        },
+        {
+            "STATUS": "decline",
+            "CODES": [2, 200]
+        },
+        {
+            "STATUS": "refunded",
+            "CODES": [3, 300]
+        }
+        
+
+    ]
+}

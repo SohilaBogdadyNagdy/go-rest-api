@@ -1,7 +1,5 @@
 package models
 
-type PaymentProvider interface{}
-
 type PaymentProviderA struct {
 	Transactions []FlyPayA `json:"transactions"`
 }
@@ -21,6 +19,11 @@ type FlyPayB struct {
 	StatusCode          int    `json:"statusCode"`
 	OrderInfo           string `json:"orderInfo"`
 	PaymentID           string `json:"paymentId"`
+}
+
+var StatusCodes []struct {
+	Status string
+	Codes  []int
 }
 
 // return obj provide all current supported payment provider
