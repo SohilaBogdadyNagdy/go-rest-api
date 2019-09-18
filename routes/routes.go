@@ -5,15 +5,8 @@ import (
 	"api/models"
 	"encoding/json"
 	"fmt"
-	"mux"
 	"net/http"
 )
-
-func HandleRoutes() (r *mux.Router) {
-	router := mux.NewRouter()
-	router.HandleFunc("/api/payment/transaction", ListAllTransactions)
-	return router
-}
 
 //List transactions in payment providers
 func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
@@ -41,14 +34,49 @@ func ListAllTransactions(writer http.ResponseWriter, request *http.Request) {
 
 		}
 		transactions = allTrasn
-	}
+		if byStatusCodeFilter != "" {
+			config := helpers.GetConfigurations()
+			var codes []int
+			for _, conf := range config.StatusCodes {
+				if conf.Status == byStatusCodeFilter {
+					codes = conf.Codes
+				}
 
-	if byStatusCodeFilter != "" {
-		config := helpers.ParseJSONFile("configs/config.json", models.StatusCodes)
-		fmt.Println(config)
+			}
+			if len(codes) == 0 {
+				// Raise 400
+			}
+			transactions = FilterTransactionsByStatusCode(transactions, codes)
+
+		}
 
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(transactions)
+}
+
+func FilterTransactionsByStatusCode(transactions interface{},
+	codes []int) (filterdTransactions interface{}) {
+
+	inter := transactions.([]interface{})
+
+	for _, value := range inter {
+		transGroup := value.(map[string]interface{})
+		for _, trans := range transGroup {
+
+			switch x := trans.(type) {
+			case []interface{}:
+				fmt.Printf("got %T\n", x)
+				for i, e := range x {
+					fmt.Println(i, e)
+				}
+			default:
+				fmt.Printf("I don't know how to handle %T\n", trans)
+			}
+
+		}
+	}
+
+	return transactions
 }

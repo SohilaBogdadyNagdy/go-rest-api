@@ -21,9 +21,12 @@ type FlyPayB struct {
 	PaymentID           string `json:"paymentId"`
 }
 
-var StatusCodes []struct {
-	Status string
-	Codes  []int
+type Config struct {
+	StatusCodes []StatusCodes `json:"StatusCodes"`
+}
+type StatusCodes struct {
+	Status string `json:"STATUS"`
+	Codes  []int  `json:"CODES"`
 }
 
 // return obj provide all current supported payment provider

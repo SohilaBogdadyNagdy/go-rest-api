@@ -1,13 +1,19 @@
 package main
 
 import (
-	"api/routes"
 	"log"
+	"mux"
 	"net/http"
+	"api/routes"
 )
 
-func main() {
-	router := routes.HandleRoutes()
+func handleRequests() {
+	router := mux.NewRouter()
+	router.HandleFunc("/api/payment/transaction", routes.ListAllTransactions)
 	http.Handle("/", router)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8081", nil))
+}
+
+func main() {
+	handleRequests()
 }

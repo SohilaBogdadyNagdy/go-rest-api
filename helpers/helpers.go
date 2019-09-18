@@ -1,14 +1,15 @@
 package helpers
 
 import (
+	"api/models"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 )
 
 // Read Json file and parsed it
-func ParseJSONFile(fileName string, parsedTo interface{}) (ParsedData interface{}) {
-	content, err := ioutil.ReadFile(fileName)
+func ParseJSONFile(filePath string, parsedTo interface{}) (ParsedData interface{}) {
+	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -17,4 +18,18 @@ func ParseJSONFile(fileName string, parsedTo interface{}) (ParsedData interface{
 		log.Fatal(err2.Error())
 	}
 	return parsedTo
+}
+
+func GetConfigurations() models.Config {
+	content, err := ioutil.ReadFile("configs/config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var config models.Config
+	err2 := json.Unmarshal(content, &config)
+	if err2 != nil {
+		log.Fatal(err2.Error())
+	}
+	return config
 }
